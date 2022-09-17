@@ -5,7 +5,6 @@ const Button = styled.button`
   font-size: inherit;
   font-weight: 700;
   text-align: center;
-  /* margin: 0 auto; */
   margin-top: 30px;
   width: 120px;
   height: 40px;

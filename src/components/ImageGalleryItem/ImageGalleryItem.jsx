@@ -1,17 +1,14 @@
-import React, {Component} from "react";
 import PropTypes from "prop-types";
 import { GalleryItem, GalleryImage } from "./ImageGalleryItem.styled";
 
-export default class ImageGalleryItem extends Component{
-  render() {
-    const { data, openModal } = this.props;
+export default function ImageGalleryItem(props) {
+  const { data, openModal } = props;
 
-    return data.map(({ id, webformatURL, largeImageURL, tags }) => (
-      <GalleryItem key={id} onClick={() => openModal(({ largeImageURL, tags }))}>
-        <GalleryImage src={webformatURL} alt={tags} loading="lazy" />
-      </GalleryItem>
-    ));
-  }
+  return data.map(({ id, webformatURL, largeImageURL, tags }) => (
+    <GalleryItem key={id} onClick={() => openModal(({ largeImageURL, tags }))}>
+      <GalleryImage src={webformatURL} alt={tags} loading="lazy" />
+    </GalleryItem>
+  ));
 }
 
 ImageGalleryItem.propTypes = {
