@@ -15,7 +15,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [images, setImages] = useState([]);
   const [page, setPage] = useState(1);
-  const [totalPage, setTotalPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState("idle");
   const [showModal, setShowModal] = useState(false);
   const [src, setSrc] = useState("");
@@ -26,6 +26,9 @@ export default function App() {
       setSearchQuery("");
       return toast.info("Please enter a search query");
     };
+    if (query === searchQuery) {
+      return toast.info(`You just searched for ${query}. Try searching for something else`);
+    };
     setSearchQuery(query);
     setPage(1);
     setImages([]);
@@ -33,14 +36,18 @@ export default function App() {
   const handleLoadMore = () => {
     setPage(prevState => prevState + 1);
   }
-  const toggleModal = data => {
+  const toggleModal = ({ largeImageURL, tags }) => {
     setShowModal(prevState => !prevState);
     if (showModal === false) {
-      const { largeImageURL, tags } = data;
       setSrc(largeImageURL);
       setAlt(tags);
     };
+    if (showModal === true) {
+      setSrc("");
+      setAlt("");
+    };
   };
+  
   useEffect(() => {
     if (searchQuery === "") {return};
 
@@ -48,19 +55,20 @@ export default function App() {
       try {
         setStatus("pending");
         const dataImages = await fetchImages(searchQuery, page);
+        const dataPages = Math.ceil(dataImages.totalHits / 12);
         if (dataImages.totalHits > 0) {
           setStatus("resolved");
-          setTotalPage(Math.ceil(dataImages.totalHits / 12))
+          setTotalPages(dataPages);
           setImages(prevState => [...prevState, ...dataImages.hits]);
-          // return toast.success(`We found ${dataImages.totalHits} images of ${searchQuery}.`);
         }
         if (dataImages.totalHits === 0) {
           setStatus("rejected");
+          setTotalPages(0);
           return toast.error("Sorry, there are no images matching your search query. Please try again.");
         }
-        if (Math.ceil(dataImages.totalHits / 12) === page) {
+        if (dataPages === page) {
           setTimeout(() => {
-            return toast.info("We're sorry, but you've reached the end of search results.");
+            return toast.info("That's all, you've reached the end of search results.");
           }, 2000);
         }
       } catch (error) {
@@ -77,7 +85,7 @@ export default function App() {
       <Section>
         <ImageGallery images={images} onModalOpen={toggleModal} />
         {status === "pending" && <Loader />}
-        {(status === "resolved" && page < totalPage) && <Btn onClick={handleLoadMore}>Load more</Btn>}
+        {(status === "resolved" && page < totalPages) && <Btn onClick={handleLoadMore}>Load more</Btn>}
       </Section>
       {showModal && <Modal onModalClose={toggleModal}><img src={src} alt={alt} /></Modal>}
       <ToastContainer autoClose={2000} theme="colored" />
