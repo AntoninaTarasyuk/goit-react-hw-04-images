@@ -5,7 +5,7 @@ export default function ImageGalleryItem(props) {
   const { data, openModal } = props;
 
   return data.map(({ id, webformatURL, largeImageURL, tags }) => (
-    <GalleryItem key={id} onClick={() => openModal(({ largeImageURL, tags }))}>
+    <GalleryItem key={id} onClick={() => openModal(largeImageURL, tags)}>
       <GalleryImage src={webformatURL} alt={tags} loading="lazy" />
     </GalleryItem>
   ));

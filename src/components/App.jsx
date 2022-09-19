@@ -36,18 +36,17 @@ export default function App() {
   const handleLoadMore = () => {
     setPage(prevState => prevState + 1);
   }
-  const toggleModal = ({ largeImageURL, tags }) => {
-    setShowModal(prevState => !prevState);
-    if (showModal === false) {
-      setSrc(largeImageURL);
-      setAlt(tags);
-    };
-    if (showModal === true) {
-      setSrc("");
-      setAlt("");
-    };
-  };
   
+  const openModal = (largeImageURL, tags) => {
+    setShowModal(true);
+    setSrc(largeImageURL);
+    setAlt(tags);
+  }
+  const closeModal = () => {
+    setShowModal(false);
+    setSrc("");
+    setAlt("");
+  }
   useEffect(() => {
     if (searchQuery === "") {return};
 
@@ -83,11 +82,11 @@ export default function App() {
     <>
       <Searchbar onSubmit={handleSubmit} />
       <Section>
-        <ImageGallery images={images} onModalOpen={toggleModal} />
+        <ImageGallery images={images} onModalOpen={openModal} />
         {status === "pending" && <Loader />}
         {(status === "resolved" && page < totalPages) && <Btn onClick={handleLoadMore}>Load more</Btn>}
       </Section>
-      {showModal && <Modal onModalClose={toggleModal}><img src={src} alt={alt} /></Modal>}
+      {showModal && <Modal onModalClose={closeModal}><img src={src} alt={alt} /></Modal>}
       <ToastContainer autoClose={2000} theme="colored" />
       <GlobalStyles />
     </>
